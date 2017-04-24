@@ -8,7 +8,7 @@ data Cmd = Pen Mode
         | Moveto Pos Pos
         | Def Name Pars Cmd
         | Call Name Vals
-        | Seq [Cmd]
+        | Seq Cmd Cmd
         deriving Show
 
 data Mode = Up | Down
@@ -32,9 +32,22 @@ instance Show Mode where
         show (Down) = show "down"
 
 -- testing
-x = Up
-test = ParsSingle "apple"
-test2 = ParsMany ["apple", "berry"]
-main = print test2
+--x = Up
+--test = ParsSingle "apple"
+--test2 = ParsMany ["apple", "berry"]
+--main = print test2
 
 -- 1B
+
+
+--vector = Def "vector" ["x1", "y1", "x2", "y2"] [Pen Up, Moveto(x1, y1), Pen Down, Moveto(x2, y2), Pen Up]
+
+vector :: Cmd
+vector = Def "vector" (ParsMany ["x1","y1","x2","y2"])
+		(Seq (Pen Up)
+		(Seq (Moveto (Posb "x1") (Posb "y1"))
+		(Seq (Pen Down)
+		(Moveto (Posb "x2") (Posb "y2")) )))
+
+
+--vector = Def "vector" (ParsSingle "Name") (Seq (Pen Up) (Seq (Moveto (Posa 5) (Posa 5)) (Seq (Pen Down)(Seq(Moveto (Posa 7) (Posa 7)) (Pen Up)))))
