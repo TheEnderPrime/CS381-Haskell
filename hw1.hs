@@ -96,10 +96,12 @@ data Expr = N Int
 		| Plus Expr Expr
 		| Times Expr Expr
 		| Neg Expr
+		deriving Show
 
-data Op = Add | Multiply | Negate
+data Op = Add | Multiply | Negate deriving Show
 data Exp = Num Int
 		| Apply Op [Exp]
+		deriving Show
 
 expression = Apply Multiply [Apply Negate [Apply Add [Num 4, Num 4]], Num 7]
 
@@ -122,4 +124,14 @@ translate (Times exp1 exp2) = Apply Multiply [translate exp1, translate exp2]
 translate (Neg exp) = Apply Negate [translate exp]
 
 test7 = Plus (N 7) (Neg (N 3))
---main = print (translate test1)
+main = do 
+	print (test1)
+	print (test2)
+	print (test3)
+	print (test4)
+	print (vector)
+	print (test5)
+	print (test6)
+	print (halfadder)
+	print (test7)
+	print (translate test7)
