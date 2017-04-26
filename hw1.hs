@@ -45,3 +45,14 @@ steps n = Seq (steps (n-1)) (Seq (Moveto (PosA (n-1)) (PosA n)) (Moveto (PosA n)
 --test1 = steps 1
 --test2 = steps 3
 --main = print test2
+
+-- 2A
+data Circuit = Circuit Gates Links 
+data Gates   = Gate Int GateFn Gates | Nogate
+data GateFn  = And | Or | Xor | Not
+data Links   = Link Int Int Int Int Links | Nolink
+
+-- 2B
+halfadder = Circuit (Gate 1 Xor (Gate 2 And Nogate)) (Link 1 1 2 1 (Link 1 2 2 2 Nolink))
+
+-- 2C
