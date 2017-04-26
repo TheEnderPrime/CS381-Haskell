@@ -13,11 +13,11 @@ data Mode = Up | Down
 data Pos = PosA Int | PosB String
 
 instance Show Pos where
-        show (PosA i) = show i
-        show (PosB j) = show j
+	show (PosA i) = show i
+	show (PosB j) = show j
 instance Show Mode where
-        show (Up) = show "Up"
-        show (Down) = show "Down"
+	show (Up) = show "Up"
+	show (Down) = show "Down"
 
 --test1 = Pen Down
 --test2 = Seq (Pen Up) (Pen Down)
@@ -56,3 +56,49 @@ data Links   = Link Int Int Int Int Links | Nolink
 halfadder = Circuit (Gate 1 Xor (Gate 2 And Nogate)) (Link 1 1 2 1 (Link 1 2 2 2 Nolink))
 
 -- 2C
+ppGate :: Int -> GateFn -> String
+ppGate i gatefn = show i ++ ":" ++ ppGateFn gatefn
+
+ppGateFn :: GateFn -> String
+ppGateFn And = "and"
+ppGateFn Or = "or"
+ppGateFn Xor = "xor"
+ppGateFn Not = "not"
+
+ppLink :: Int -> Int -> Int -> Int -> String
+ppLink i1 i2 i3 i4 = "from " ++ show i1 ++ "." ++ show i2 ++ " to " ++ show i3 ++ "." ++ show i4
+
+ppLinks :: Links -> String
+ppLinks Nolink = ""
+ppLinks (Link i1 i2 i3 i4 links) = ppLink i1 i2 i3 i4 ++ ";\n" ++ ppLinks links
+
+ppGates :: Gates -> String
+ppGates Nogate = ""
+ppGates (Gate i gatefn Nogate) = ppGate i gatefn
+ppGates (Gate i gatefn gates) = ppGate i gatefn ++ ";\n" ++ ppGates gates
+
+ppCircuit :: Circuit -> String
+ppCircuit (Circuit gates Nolink) = ppGates gates
+ppCircuit (Circuit gates links) = ppGates gates ++ ";\n" ++ ppLinks links
+
+instance Show Circuit where
+	show = ppCircuit 
+instance Show Gates where
+	show = ppGates
+instance Show Links where
+	show = ppLinks
+instance Show GateFn where
+	show = ppGateFn
+
+--main = print halfadder
+
+-- 3A
+data Expr = N Int
+		| Plus Expr Expr
+		| Times Expr Expr
+		| Neg Expr
+
+data Op = Add | Multiply | Negate
+data Exp = Num Int
+		| Apply Op [Exp]
+
