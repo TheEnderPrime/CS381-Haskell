@@ -1,53 +1,47 @@
---
 -- CS 381 HW 1
 -- Glenn Upthagrove, Brian Ozarowicz, David Baugh
---
 
 -- 1A
 data Cmd = Pen Mode
         | Moveto Pos Pos
-        | Def Name Pars Cmd
-        | Call Name Vals
+        | Def String [String] Cmd
+        | Call String [Int]
         | Seq Cmd Cmd
         deriving Show
 
 data Mode = Up | Down
-data Pos = Posa Number | Posb Name
-data Pars = ParsSingle Name | ParsMany [Name]
-data Vals = ValsSingle Int | ValsMany [Int]
+data Pos = PosA Int | PosB String
 
-type Number = Int
-type Name = String
-
-instance Show Vals where
-        show (ValsSingle i) = show i
-instance Show Pars where
-        show (ParsSingle i) = show i
-        show (ParsMany j) = show j
 instance Show Pos where
-        show (Posa i) = show i
-        show (Posb j) = show j
+        show (PosA i) = show i
+        show (PosB j) = show j
 instance Show Mode where
-        show (Up) = show "up"
-        show (Down) = show "down"
+        show (Up) = show "Up"
+        show (Down) = show "Down"
 
--- testing
---x = Up
---test = ParsSingle "apple"
---test2 = ParsMany ["apple", "berry"]
---main = print test2
+--test1 = Pen Down
+--test2 = Seq (Pen Up) (Pen Down)
+--test3 = Moveto (PosA 1) (PosA 2)
+--test4 = Moveto (PosB "1") (PosB "2")
+--main = print test1
 
 -- 1B
-
-
---vector = Def "vector" ["x1", "y1", "x2", "y2"] [Pen Up, Moveto(x1, y1), Pen Down, Moveto(x2, y2), Pen Up]
-
+-- def vector (x1, y1, x2, y2) pen up; moveto (x1, y1); pen down; moveto (x2, y2)
 vector :: Cmd
-vector = Def "vector" (ParsMany ["x1","y1","x2","y2"])
+vector = Def "vector" ["x1", "y1", "x2", "y2"]
 		(Seq (Pen Up)
-		(Seq (Moveto (Posb "x1") (Posb "y1"))
+		(Seq (Moveto (PosB "x1") (PosB "y1"))
 		(Seq (Pen Down)
-		(Moveto (Posb "x2") (Posb "y2")) )))
+		(Moveto (PosB "x2") (PosB "y2")))))
 
+--test1 = vector
+--main = print test1
 
---vector = Def "vector" (ParsSingle "Name") (Seq (Pen Up) (Seq (Moveto (Posa 5) (Posa 5)) (Seq (Pen Down)(Seq(Moveto (Posa 7) (Posa 7)) (Pen Up)))))
+-- 1C
+steps :: Int -> Cmd
+steps 1 = Seq (Pen Up) (Seq (Moveto (PosA 0) (PosA 0)) (Seq (Pen Down) (Seq (Moveto (PosA 0) (PosA 1)) ((Moveto (PosA 1) (PosA 1))))))
+steps n = Seq (steps (n-1)) (Seq (Moveto (PosA (n-1)) (PosA n)) (Moveto (PosA n) (PosA n)))
+
+--test1 = steps 1
+--test2 = steps 3
+--main = print test2
