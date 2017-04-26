@@ -19,10 +19,10 @@ instance Show Mode where
 	show (Up) = show "Up"
 	show (Down) = show "Down"
 
---test1 = Pen Down
---test2 = Seq (Pen Up) (Pen Down)
---test3 = Moveto (PosA 1) (PosA 2)
---test4 = Moveto (PosB "1") (PosB "2")
+test1 = Pen Down
+test2 = Seq (Pen Up) (Pen Down)
+test3 = Moveto (PosA 1) (PosA 2)
+test4 = Moveto (PosB "1") (PosB "2")
 --main = print test1
 
 -- 1B
@@ -34,23 +34,22 @@ vector = Def "vector" ["x1", "y1", "x2", "y2"]
 		(Seq (Pen Down)
 		(Moveto (PosB "x2") (PosB "y2")))))
 
---test1 = vector
---main = print test1
+--main = print vector
 
 -- 1C
 steps :: Int -> Cmd
 steps 1 = Seq (Pen Up) (Seq (Moveto (PosA 0) (PosA 0)) (Seq (Pen Down) (Seq (Moveto (PosA 0) (PosA 1)) ((Moveto (PosA 1) (PosA 1))))))
 steps n = Seq (steps (n-1)) (Seq (Moveto (PosA (n-1)) (PosA n)) (Moveto (PosA n) (PosA n)))
 
---test1 = steps 1
---test2 = steps 3
+test5 = steps 1
+test6 = steps 3
 --main = print test2
 
 -- 2A
-data Circuit = Circuit Gates Links 
-data Gates   = Gate Int GateFn Gates | Nogate
-data GateFn  = And | Or | Xor | Not
-data Links   = Link Int Int Int Int Links | Nolink
+data Circuit = Circuit Gates Links
+data Gates = Gate Int GateFn Gates | Nogate
+data GateFn = And | Or | Xor | Not
+data Links = Link Int Int Int Int Links | Nolink
 
 -- 2B
 halfadder = Circuit (Gate 1 Xor (Gate 2 And Nogate)) (Link 1 1 2 1 (Link 1 2 2 2 Nolink))
@@ -82,7 +81,7 @@ ppCircuit (Circuit gates Nolink) = ppGates gates
 ppCircuit (Circuit gates links) = ppGates gates ++ ";\n" ++ ppLinks links
 
 instance Show Circuit where
-	show = ppCircuit 
+	show = ppCircuit
 instance Show Gates where
 	show = ppGates
 instance Show Links where
@@ -102,3 +101,25 @@ data Op = Add | Multiply | Negate
 data Exp = Num Int
 		| Apply Op [Exp]
 
+expression = Apply Multiply [Apply Negate [Apply Add [Num 4, Num 4]], Num 7]
+
+-- 3B
+{-
+Advantages:
+The first representation ensures that operations are only used with a specific number of arguments that make sense.
+The second representation makes it so new operations can be added easily by simply adding another constructor to Op.
+
+Disadvantages:
+When adding more operations to the first representation you have to specify the number of arguments the constructor will use.
+The second representation does not restrict the number of arguments of an operation to something that makes sense for it.
+-}
+
+-- 3C
+translate :: Expr -> Exp
+translate (N int) = Num int
+translate (Plus exp1 exp2) = Apply Add [translate exp1, translate exp2]
+translate (Times exp1 exp2) = Apply Multiply [translate exp1, translate exp2]
+translate (Neg exp) = Apply Negate [translate exp]
+
+test7 = Plus (N 7) (Neg (N 3))
+--main = print (translate test1)
