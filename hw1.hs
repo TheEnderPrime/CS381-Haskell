@@ -23,7 +23,6 @@ test1 = Pen Down
 test2 = Seq (Pen Up) (Pen Down)
 test3 = Moveto (PosA 1) (PosA 2)
 test4 = Moveto (PosB "1") (PosB "2")
---main = print test1
 
 -- 1B
 -- def vector (x1, y1, x2, y2) pen up; moveto (x1, y1); pen down; moveto (x2, y2)
@@ -34,8 +33,6 @@ vector = Def "vector" ["x1", "y1", "x2", "y2"]
 		(Seq (Pen Down)
 		(Moveto (PosB "x2") (PosB "y2")))))
 
---main = print vector
-
 -- 1C
 steps :: Int -> Cmd
 steps 1 = Seq (Pen Up) (Seq (Moveto (PosA 0) (PosA 0)) (Seq (Pen Down) (Seq (Moveto (PosA 0) (PosA 1)) ((Moveto (PosA 1) (PosA 1))))))
@@ -43,7 +40,6 @@ steps n = Seq (steps (n-1)) (Seq (Moveto (PosA (n-1)) (PosA n)) (Moveto (PosA n)
 
 test5 = steps 1
 test6 = steps 3
---main = print test2
 
 -- 2A
 data Circuit = Circuit Gates Links
@@ -89,8 +85,6 @@ instance Show Links where
 instance Show GateFn where
 	show = ppGateFn
 
---main = print halfadder
-
 -- 3A
 data Expr = N Int
 		| Plus Expr Expr
@@ -98,7 +92,8 @@ data Expr = N Int
 		| Neg Expr
 		deriving Show
 
-data Op = Add | Multiply | Negate deriving Show
+data Op = Add | Multiply | Negate
+		deriving Show
 data Exp = Num Int
 		| Apply Op [Exp]
 		deriving Show
@@ -124,7 +119,10 @@ translate (Times exp1 exp2) = Apply Multiply [translate exp1, translate exp2]
 translate (Neg exp) = Apply Negate [translate exp]
 
 test7 = Plus (N 7) (Neg (N 3))
-main = do 
+
+-- testing
+{-
+main = do
 	print (test1)
 	print (test2)
 	print (test3)
@@ -135,3 +133,4 @@ main = do
 	print (halfadder)
 	print (test7)
 	print (translate test7)
+-}
