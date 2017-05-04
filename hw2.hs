@@ -10,13 +10,14 @@ type Stack = [Int]
 type D = Stack -> Maybe Stack
 
 semCmd :: Cmd -> D
-semCmd (LD i) xs = Just(i:xs)
-semCmd (ADD) (x1:x2:xs) = Just(x1+x2:xs)
+semCmd (LD i) xs = Just (i:xs)
+semCmd (ADD) (x1:x2:xs) = Just (x1+x2:xs)
 semCmd (ADD) (_) = Nothing
-semCmd (MULT) (x1:x2:xs) = Just(x1*x2:xs)
+semCmd (MULT) (x1:x2:xs) = Just (x1*x2:xs)
 semCmd (MULT) (_) = Nothing
 semCmd (DUP) (x:xs) = Just (x:x:xs)
 semCmd (DUP) (_) = Nothing
+semCmd _ _ = Nothing
 
 sem :: Prog -> D
 sem [] ys = Just (ys)
@@ -40,7 +41,25 @@ type Macros = [(String,Prog)]
 type State = Maybe (Macros, Stack)
 
 -- Exercise 2c
+type D2 = State -> State
 
+semCmd2 :: Cmd -> D2
+semCmd2 (LD i) (Just (macro, xs)) = Just (macro, i:xs)
+semCmd2 (ADD) (Just (macro, x1:x2:xs)) = Just (macro, x1+x2:xs)
+semCmd2 (ADD) (_) = Nothing
+semCmd2 (MULT) (Just (macro, x1:x2:xs)) = Just (macro, x1*x2:xs)
+semCmd2 (MULT) (_) = Nothing
+semCmd2 (DUP) (Just (macro, x:xs)) = Just (macro, x:x:xs)
+semCmd2 (DUP) (_) = Nothing
+semCmd2 (DEF w p) (Just (macro, xs)) = Just (((w, p):macro, xs))
+semCmd2 (CALL n) (Just (macro, xs)) = case lookup n macro of
+                                           Just found -> sem2 found (Just (macro, xs))
+                                           _          -> Nothing  
+semCmd2 _ _ = Nothing
+
+sem2 :: Prog -> D2
+sem2 [] (Just ys) = Just (ys)
+sem2 (x:xs) ys = sem2 xs (semCmd2 x ys)
 
 -- Exercise 3
 data Cmd3 = Pen Mode | MoveTo Int Int | Seq Cmd3 Cmd3
@@ -62,4 +81,4 @@ semS (MoveTo x1 y1) (Down, x2, y2) = ((Down, x1, y1), [(x2, y2, x1, y1)])
 semS (Seq cmd1 cmd2) state = (fst(semS cmd2 (fst(semS cmd1 state))), snd(semS cmd1 state)++snd(semS cmd2 (fst(semS cmd1 state))))
 
 sem' :: Cmd3 -> Lines
-sem' initial = snd (semS initial (Up, 0, 0))
+sem' initial = snd(semS initial (Up, 0, 0))
