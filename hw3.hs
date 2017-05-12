@@ -1,6 +1,10 @@
 -- CS 381 HW 3
 -- Glenn Upthagrove, Brian Ozarowicz, David Baugh
 
+-- Exercise 1A
+type Prog = [Cmd]
+data Cmd = LD Int | ADD | MULT | DUP | INC | SWAP | POP Int deriving Show
+
 type Rank = Int
 type CmdRank = (Int, Int)
 
