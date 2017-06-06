@@ -31,3 +31,17 @@ meet(Student1,Student2) :- enroll(Student1,Class1), enroll(Student2,Class2), whe
 
 /* Exercise 2 */
 
+rdup([],[]).
+rdup([X],[X]).
+rdup([X,X|L],M) :- rdup([X|L],M).
+rdup([X,Y|L],[X|M]) :- rdup([Y|L],M), X\=Y.
+
+flat([],[]).
+flat([X|L],F) :- flat(X,X2), flat(L,L2), append(X2,L2,F).
+flat(X,[X]).
+
+project([],_,[]).
+project(_,[],[]).
+/* project([A, B, C], L1, L2) :- project(A, L1, L2), project(B, L1, L2), project(C, L1, L2). */
+/* project(0, [X|_], L2) :- myappend([X], L2, L2). */
+/* project(X, [X|T], L2) :- project(X-1, [T], L2). */
